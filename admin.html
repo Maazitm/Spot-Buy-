@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpotBUY Admin Panel</title>
+    <!-- Tailwind CSS for instant, beautiful styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert for nice popup notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- ==================== LOGIN SCREEN ==================== -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-96">
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center text-teal-600">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                </div>
+            </div>
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">SpotBUY Portal</h2>
+            <p class="text-center text-gray-500 mb-6 text-sm">Login as Admin or Shopkeeper</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="emailInput" value="admin@abcmedical.com" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="passwordInput" value="password123" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                </div>
+                <button onclick="handleLogin()" id="loginBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700">
+                    Sign In
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== DASHBOARD SCREEN ==================== -->
+    <div id="dashboardScreen" class="hidden min-h-screen flex">
+        
+        <!-- Sidebar -->
+        <div class="w-64 bg-gray-900 text-white flex flex-col">
+            <div class="p-6 border-b border-gray-800">
+                <h1 class="text-2xl font-bold text-teal-400">SpotBUY</h1>
+                <p id="roleDisplay" class="text-xs text-gray-400 mt-1 uppercase tracking-wider"></p>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="#" class="block px-4 py-2 bg-gray-800 rounded-md text-white">Dashboard</a>
+                <a href="#" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md">Products</a>
+                <a href="#" class="block px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md">Orders</a>
+                <!-- Only Super Admin sees this -->
+                <a href="#" id="manageShopsNav" class="hidden px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md">Manage Shops</a>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <button onclick="handleLogout()" class="w-full flex items-center justify-center px-4 py-2 text-sm text-red-400 hover:bg-gray-800 rounded-md">
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 bg-gray-100">
+            <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-gray-800">Overview</h2>
+                <div class="flex items-center space-x-4">
+                    <span id="userNameDisplay" class="text-sm font-medium text-gray-700"></span>
+                    <div class="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white font-bold" id="userInitial"></div>
+                </div>
+            </header>
+
+            <main class="p-8">
+                <!-- Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="text-sm font-medium text-gray-500">Total Products</h3>
+                        <p id="statProducts" class="text-3xl font-bold text-gray-900 mt-2">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="text-sm font-medium text-gray-500">Total Orders</h3>
+                        <p id="statOrders" class="text-3xl font-bold text-gray-900 mt-2">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h3 class="text-sm font-medium text-gray-500">Revenue</h3>
+                        <p id="statRevenue" class="text-3xl font-bold text-gray-900 mt-2">₹0</p>
+                    </div>
+                </div>
+
+                <!-- Products Table -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                        <h3 class="text-lg font-medium text-gray-900">Your Products</h3>
+                        <button onclick="alert('Feature coming soon!')" class="bg-teal-600 text-white px-4 py-2 rounded-md text-sm hover:bg-teal-700">Add New Product</button>
+                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 text-sm border-b border-gray-100">
+                                <th class="px-6 py-3 font-medium">Product Info</th>
+                                <th class="px-6 py-3 font-medium">Category</th>
+                                <th class="px-6 py-3 font-medium">Price</th>
+                                <th class="px-6 py-3 font-medium">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody" class="text-sm text-gray-700">
+                            <!-- JS Will Populate This -->
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION (CHANGE THESE!)
+        // ==========================================
+        const CONFIG = {
+            token: 'ghp_YOUR_NEW_TOKEN_HERE', // PASTE NEW TOKEN HERE
+            owner: 'Maazitm',
+            repo: 'Spot-Buy-'
+        };
+
+        let currentUser = null;
+        let globalProducts = [];
+        let globalOrders = [];
+
+        // Check if already logged in
+        window.onload = () => {
+            const savedUser = localStorage.getItem('spotbuy_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            }
+        };
+
+        // --- GITHUB API HELPER ---
+        async function fetchGithubJson(filename) {
+            const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${filename}`;
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${CONFIG.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            if (!response.ok) throw new Error(`Failed to fetch ${filename}`);
+            const data = await response.json();
+            // Decode Base64
+            const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+            return JSON.parse(content);
+        }
+
+        // --- LOGIN LOGIC ---
+        async function handleLogin() {
+            const email = document.getElementById('emailInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+            const btn = document.getElementById('loginBtn');
+
+            if (!email || !password) return Swal.fire('Error', 'Please enter email and password', 'error');
+
+            btn.innerText = 'Loading...';
+            btn.disabled = true;
+
+            try {
+                const db = await fetchGithubJson('users.json');
+                const users = db.users || [];
+                
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if (user && (user.role === 'admin' || user.role === 'shopkeeper')) {
+                    currentUser = user;
+                    localStorage.setItem('spotbuy_user', JSON.stringify(user));
+                    Swal.fire({ title: 'Success', text: 'Login Successful', icon: 'success', timer: 1500, showConfirmButton: false });
+                    setTimeout(showDashboard, 1500);
+                } else {
+                    Swal.fire('Access Denied', 'Invalid credentials or unauthorized role.', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'Could not connect to database. Check Token.', 'error');
+                console.error(error);
+            } finally {
+                btn.innerText = 'Sign In';
+                btn.disabled = false;
+            }
+        }
+
+        // --- DASHBOARD LOGIC ---
+        async function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('hidden');
+
+            // Set User Info
+            document.getElementById('userNameDisplay').innerText = currentUser.name;
+            document.getElementById('userInitial').innerText = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('roleDisplay').innerText = `${currentUser.role} Account`;
+
+            if (currentUser.role === 'admin') {
+                document.getElementById('manageShopsNav').classList.remove('hidden');
+            }
+
+            // Load Data
+            try {
+                const prodData = await fetchGithubJson('products.json');
+                const orderData = await fetchGithubJson('orders.json');
+                
+                let myProducts = prodData.products || [];
+                let myOrders = orderData.orders || [];
+
+                // FILTERING (THE MAGIC SAUCE)
+                if (currentUser.role === 'shopkeeper') {
+                    // Shopkeepers only see their own products and orders
+                    myProducts = myProducts.filter(p => p.ownerId === currentUser.email);
+                    myOrders = myOrders.filter(o => o.items.some(i => myProducts.find(mp => mp.id === i.productId)));
+                }
+
+                // Calculate Metrics
+                document.getElementById('statProducts').innerText = myProducts.length;
+                document.getElementById('statOrders').innerText = myOrders.length;
+                
+                const totalRev = myOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+                document.getElementById('statRevenue').innerText = `₹${totalRev}`;
+
+                // Render Table
+                const tbody = document.getElementById('productsTableBody');
+                tbody.innerHTML = '';
+                
+                if (myProducts.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No products found.</td></tr>`;
+                } else {
+                    myProducts.forEach(p => {
+                        const statusColor = p.stockStatus === 'in_stock' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50';
+                        const statusText = p.stockStatus === 'in_stock' ? 'In Stock' : 'Low/Out of Stock';
+                        
+                        tbody.innerHTML += `
+                            <tr class="border-b border-gray-50 hover:bg-gray-50">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center">
+                                        <div class="h-10 w-10 flex-shrink-0 rounded bg-gray-200 overflow-hidden">
+                                            <img src="${p.imageUrl}" class="h-full w-full object-cover">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="font-medium text-gray-900">${p.name}</div>
+                                            <div class="text-xs text-gray-500">${p.shopName}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">${p.category}</td>
+                                <td class="px-6 py-4 font-medium">₹${p.price}</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 rounded text-xs font-medium ${statusColor}">${p.quantity} (${statusText})</span>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error("Dashboard Load Error:", error);
+                Swal.fire('Error', 'Failed to load dashboard data', 'error');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('spotbuy_user');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
