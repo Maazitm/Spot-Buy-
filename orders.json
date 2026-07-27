@@ -1,3 +1,26 @@
 {
-  "orders": []
+  "orders": [
+    {
+      "orderId": "ORD-001",
+      "customerId": "rahul.sharma@gmail.com",
+      "shopId": "shop_1",
+      "totalAmount": 165.0,
+      "status": "Completed",
+      "date": "2026-07-28T10:30:00Z",
+      "items": [
+        {
+          "productId": "prod_1",
+          "name": "Paracetamol 500mg",
+          "quantity": 1,
+          "price": 45.0
+        },
+        {
+          "productId": "prod_2",
+          "name": "Cough Syrup 100ml",
+          "quantity": 1,
+          "price": 120.0
+        }
+      ]
+    }
+  ]
 }
