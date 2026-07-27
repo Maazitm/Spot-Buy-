@@ -1,3 +1,26 @@
 {
-  "shops": []
+  "shops": [
+    {
+      "id": "shop_1",
+      "ownerId": "admin@abcmedical.com",
+      "name": "ABC Medical Store",
+      "type": "Medical Store",
+      "address": "123 Main Street, Indore",
+      "latitude": 22.7196,
+      "longitude": 75.8577,
+      "rating": 4.8,
+      "isOpen": true
+    },
+    {
+      "id": "shop_2",
+      "ownerId": "freshfood@example.com",
+      "name": "Fresh Food Daily",
+      "type": "Grocery Store",
+      "address": "45 Market Road, Indore",
+      "latitude": 22.7200,
+      "longitude": 75.8600,
+      "rating": 4.5,
+      "isOpen": true
+    }
+  ]
 }
