@@ -31,6 +31,13 @@
                     <label class="block text-sm font-medium text-gray-700">Password</label>
                     <input type="password" id="passwordInput" value="password123" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-teal-500 focus:border-teal-500">
                 </div>
+                <!-- NEW SECURE TOKEN INPUT -->
+                <div class="bg-gray-50 p-3 border border-gray-200 rounded-md">
+                    <label class="block text-sm font-medium text-gray-700 text-teal-700">GitHub API Token</label>
+                    <input type="password" id="tokenInput" placeholder="ghp_..." class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-teal-500 focus:border-teal-500">
+                    <p class="text-xs text-gray-500 mt-1">Stored securely in your browser. Never committed to public repo.</p>
+                </div>
+                
                 <button onclick="handleLogin()" id="loginBtn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700">
                     Sign In
                 </button>
@@ -114,39 +121,44 @@
 
     <script>
         // ==========================================
-        // CONFIGURATION (CHANGE THESE!)
+        // CONFIGURATION
         // ==========================================
         const CONFIG = {
-            token: 'ghp_YOUR_NEW_TOKEN_HERE', // PASTE NEW TOKEN HERE
             owner: 'Maazitm',
             repo: 'Spot-Buy-'
+            // Token removed for security!
         };
 
         let currentUser = null;
-        let globalProducts = [];
-        let globalOrders = [];
 
-        // Check if already logged in
+        // Check if already logged in (Checks for User AND Token)
         window.onload = () => {
             const savedUser = localStorage.getItem('spotbuy_user');
-            if (savedUser) {
+            const savedToken = localStorage.getItem('spotbuy_token');
+            
+            if (savedUser && savedToken) {
                 currentUser = JSON.parse(savedUser);
                 showDashboard();
             }
         };
 
         // --- GITHUB API HELPER ---
-        async function fetchGithubJson(filename) {
+        // Now accepts an overrideToken to test during login
+        async function fetchGithubJson(filename, overrideToken = null) {
+            const token = overrideToken || localStorage.getItem('spotbuy_token');
+            
+            if (!token) throw new Error("No token provided");
+
             const url = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${filename}`;
             const response = await fetch(url, {
                 headers: {
-                    'Authorization': `Bearer ${CONFIG.token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Accept': 'application/vnd.github.v3+json'
                 }
             });
-            if (!response.ok) throw new Error(`Failed to fetch ${filename}`);
+            if (!response.ok) throw new Error(`Failed to fetch ${filename}. Check Token or File existence.`);
+            
             const data = await response.json();
-            // Decode Base64
             const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
             return JSON.parse(content);
         }
@@ -155,29 +167,37 @@
         async function handleLogin() {
             const email = document.getElementById('emailInput').value.trim();
             const password = document.getElementById('passwordInput').value.trim();
+            const token = document.getElementById('tokenInput').value.trim();
             const btn = document.getElementById('loginBtn');
 
-            if (!email || !password) return Swal.fire('Error', 'Please enter email and password', 'error');
+            if (!email || !password || !token) {
+                return Swal.fire('Error', 'Please enter Email, Password, AND your GitHub Token.', 'error');
+            }
 
-            btn.innerText = 'Loading...';
+            btn.innerText = 'Verifying...';
             btn.disabled = true;
 
             try {
-                const db = await fetchGithubJson('users.json');
+                // Pass the typed token directly to verify it works
+                const db = await fetchGithubJson('users.json', token);
                 const users = db.users || [];
                 
                 const user = users.find(u => u.email === email && u.password === password);
                 
                 if (user && (user.role === 'admin' || user.role === 'shopkeeper')) {
                     currentUser = user;
+                    
+                    // Securely save session and token to local browser storage
                     localStorage.setItem('spotbuy_user', JSON.stringify(user));
+                    localStorage.setItem('spotbuy_token', token);
+                    
                     Swal.fire({ title: 'Success', text: 'Login Successful', icon: 'success', timer: 1500, showConfirmButton: false });
                     setTimeout(showDashboard, 1500);
                 } else {
                     Swal.fire('Access Denied', 'Invalid credentials or unauthorized role.', 'error');
                 }
             } catch (error) {
-                Swal.fire('Error', 'Could not connect to database. Check Token.', 'error');
+                Swal.fire('Connection Error', 'Could not connect. Ensure your GitHub Token is correct and has "repo" permissions.', 'error');
                 console.error(error);
             } finally {
                 btn.innerText = 'Sign In';
@@ -256,12 +276,14 @@
                 }
             } catch (error) {
                 console.error("Dashboard Load Error:", error);
-                Swal.fire('Error', 'Failed to load dashboard data', 'error');
+                Swal.fire('Error', 'Failed to load dashboard data. Token might have expired.', 'error');
+                handleLogout(); // Force logout if token becomes invalid
             }
         }
 
         function handleLogout() {
             localStorage.removeItem('spotbuy_user');
+            localStorage.removeItem('spotbuy_token'); // Clear the token!
             window.location.reload();
         }
     </script>
