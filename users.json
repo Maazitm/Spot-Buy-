@@ -1,3 +1,11 @@
 {
-  "users": []
+  "users": [
+    {
+      "name": "Admin",
+      "phone": "9999999999",
+      "email": "admin@gmail.com",
+      "password": "123456",
+      "role": "shopkeeper"
+    }
+  ]
 }
