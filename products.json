@@ -1,3 +1,48 @@
 {
-  "products": []
+  "products": [
+    {
+      "id": "prod_1",
+      "shopId": "shop_1",
+      "shopName": "ABC Medical Store",
+      "ownerId": "admin@abcmedical.com",
+      "name": "Paracetamol 500mg",
+      "category": "Medical",
+      "price": 45.0,
+      "stockStatus": "In Stock",
+      "searchKeywords": ["fever", "pain", "paracetamol", "medicine"]
+    },
+    {
+      "id": "prod_2",
+      "shopId": "shop_1",
+      "shopName": "ABC Medical Store",
+      "ownerId": "admin@abcmedical.com",
+      "name": "Cough Syrup 100ml",
+      "category": "Medical",
+      "price": 120.0,
+      "stockStatus": "Low Stock",
+      "searchKeywords": ["cough", "cold", "syrup"]
+    },
+    {
+      "id": "prod_3",
+      "shopId": "shop_2",
+      "shopName": "Fresh Food Daily",
+      "ownerId": "freshfood@example.com",
+      "name": "Fresh Whole Wheat Bread",
+      "category": "Grocery",
+      "price": 40.0,
+      "stockStatus": "In Stock",
+      "searchKeywords": ["bread", "bakery", "food", "breakfast"]
+    },
+    {
+      "id": "prod_4",
+      "shopId": "shop_2",
+      "shopName": "Fresh Food Daily",
+      "ownerId": "freshfood@example.com",
+      "name": "Farm Eggs (1 Dozen)",
+      "category": "Grocery",
+      "price": 60.0,
+      "stockStatus": "In Stock",
+      "searchKeywords": ["eggs", "dairy", "breakfast", "grocery"]
+    }
+  ]
 }
